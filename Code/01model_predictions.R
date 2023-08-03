@@ -2,7 +2,6 @@
 library(pls)
 library(mdatools)
 library(tidyverse)
-library(htmltools)
 library(prospectr)
 library(RColorBrewer)
 library(gridExtra)
@@ -270,7 +269,7 @@ dat_plot <- df1 %>%
 
 dat_RMSEP <- sqrt(sum(dat_plot$residual^2)/length(dat_plot$residual))
 
-dat_r2 <- rsq(dat_2014_plot$reference, dat_plot$rounded_pred)
+dat_r2 <- rsq(dat_plot$reference, dat_plot$prediction)
 
 dat_dist <- dat_plot %>%
   ungroup()%>%
@@ -290,18 +289,21 @@ p0 <- ggplot(dat_plot)+
   labs(title = "2014-2021", y = "predicted age (years)", x = "reference age (years)", fill = "log(counts)")+
   scale_y_continuous(limits = c(-1,20), breaks = c(0,5,10,15,20), expand = c(0,0))+
   scale_x_continuous(limits = c(-1,25), breaks = c(0,5,10,15,20), expand = c(0,0))+
-  annotate(geom = 'text', label = paste0("r^2==", round(dat_2014_r2, digits = 3)), x = 0, y = 19, hjust = "left", parse = TRUE, size = 2.5)+
-  annotate("text", x=0, y = 18, label = paste0("RMSECV==", round(dat_2014_RMSEP, digits = 3)), hjust = "left", parse = TRUE, size = 2.5)+
-  annotate("text", x=0, y = 16, label = paste0("extreme=", round(dat_2014_dist$extreme, digits = 3)*100, "%"), hjust = "left", parse = F, size = 2.5)+
-  annotate("text", x=0, y = 15, label = paste0("outlier=", round(dat_2014_dist$outlier, digits = 3)*100, "%"), hjust = "left", parse = F, size = 2.5)+
+  annotate(geom = 'text', label = paste0("r^2==", round(dat_r2, digits = 3)), x = 0, y = 19, hjust = "left", parse = TRUE, size = 2.5)+
+  annotate("text", x=0, y = 18, label = paste0("RMSECV==", round(dat_RMSEP, digits = 3)), hjust = "left", parse = TRUE, size = 2.5)+
+  annotate("text", x=0, y = 16, label = paste0("extreme=", round(dat_dist$extreme, digits = 3)*100, "%"), hjust = "left", parse = F, size = 2.5)+
+  annotate("text", x=0, y = 15, label = paste0("outlier=", round(dat_dist$outlier, digits = 3)*100, "%"), hjust = "left", parse = F, size = 2.5)+
   theme_classic()
 
+pdf(file = "C:/Users/marri/OneDrive/Documents/AFSC A&G Contract/Rounding conversation SIDT/pollock-rounding/Output/prediction_plot.pdf")
 p0
+dev.off()
+
 
 ggplot()+
   geom_point(data = df1, aes(f_scale, Z_scale, color = category)) + #this is uggo but don't feel like making a separate vector right now
-  geom_line(data = data.frame(df2_14$extremes), aes(fE, zE), color = "blue")+
-  geom_line(data = data.frame(df2_14$outliers), aes(fO, zO), color = "red")+
+  geom_line(data = data.frame(df2$extremes), aes(fE, zE), color = "blue")+
+  geom_line(data = data.frame(df2$outliers), aes(fO, zO), color = "red")+
   labs(x = "Full X-distance, f/f0",
        y = "Y-distance, z/z0")+
   theme_classic()
