@@ -2,6 +2,7 @@
 library(pls)
 library(mdatools)
 library(tidyverse)
+library(htmltools)
 library(prospectr)
 library(RColorBrewer)
 library(gridExtra)
@@ -39,25 +40,6 @@ sg_dat_L<-dat_sg_filt%>%tidyr::pivot_longer(.,cols=c(42:ncol(dat_sg_filt)),names
 
 sg_dat_L$wavenumber <- as.numeric(sg_dat_L$wavenumber)
 
-# SG spectra plot
-selected_wn <- vip[which(vip > .5),]
-names(selected_wn) <- sub('X','', names(selected_wn)) #remove X in front of wavenumbers
-selected_wn <- as.numeric(names(selected_wn))
-
-`%notin%` <- Negate(`%in%`)
-
-wn_dat_plot <- sg_dat_L[which(sg_dat_L$wavenumber %notin% selected_wn),]
-
-sp <- ggplot(sg_dat_L[seq(1,12696138, by=30),])+
-  geom_line(aes(x = wavenumber, y = absorbance, group = filename, color = as.factor(collection_year)))+
-  scale_x_reverse()+
-  theme_classic()+
-  # guides(color = "none")+
-  geom_vline(xintercept = wn_dat_plot$wavenumber, color = alpha("grey", 0.2))
-#facet_wrap(~collection_year, ncol = 4)
-
-ggplotly(sp)
-
 # PCA
 m1 <- pca(dat_sg_filt[,42:length(dat_sg_filt)], ncomp = 7, scale= F, center = T)
 
@@ -74,7 +56,11 @@ s <- ggplot(dat_sg_filt, aes(label = filename))+
   geom_vline(xintercept = 0, linetype = "dashed", color = "grey50")+
   theme(panel.border = element_rect(fill = NA, color = "grey50"), panel.background = element_blank(), legend.key = element_rect(fill = "white"))
 
-ggplotly(s)
+s_plotly <- ggplotly(s)
+
+pdf(file="Output/PCA_p1_pc2.pdf")
+s
+dev.off()
 
 # PC 2 and PC 3
 s2 <- ggplot(dat_sg_filt, aes(label = filename))+
@@ -136,7 +122,7 @@ ggplot()+
 
 # PLS for outlier removal
 # PLS
-m1 = mdatools::pls(dat_sg[,c(42:946)], final_age, 10, scale = F, center = T, cv = 20)
+m1 = mdatools::pls(dat_sg_filt[,c(42:946)], dat_sg_filt$final_age, 10, scale = F, center = T, cv = 20)
 
 # Plot Residuals
 plotXYResiduals(m1, show.labels = TRUE, labels = "indices")
@@ -145,7 +131,7 @@ plotXYResiduals(m1, show.labels = TRUE, labels = "indices")
 c <- categorize(m1)
 index_outliers <- as.numeric(which(c == "outlier"))
 
-dat_filt <- dat_2014[-c(index_outliers),]
+dat_filt <- dat_sg_filt[-c(index_outliers),]
 
 # PLS
 m1 = mdatools::pls(dat_filt[,c(42:946)], dat_filt$final_age, 10, scale = F, center = T, cv = 20)
@@ -188,10 +174,35 @@ m1 = mdatools::pls(dat_filt[,c(42:946)], dat_filt$final_age, 10, scale = F, cent
 
 # Plot Residuals
 plotXYResiduals(m1, show.labels = TRUE, labels = "indices")
+
+# Remove outlier
+c <- categorize(m1)
+index_outliers <- as.numeric(which(c == "outlier"))
+
+dat_filt <- dat_filt[-c(index_outliers),]
+
+# PLS
+m1 = mdatools::pls(dat_filt[,c(42:946)], dat_filt$final_age, 10, scale = F, center = T, cv = 20)
+
+# Plot Residuals
+plotXYResiduals(m1, show.labels = TRUE, labels = "indices")
+
+# Remove outlier
+c <- categorize(m1)
+index_outliers <- as.numeric(which(c == "outlier"))
+
+dat_filt <- dat_filt[-c(index_outliers),]
+
+# PLS
+m1 = mdatools::pls(dat_filt[,c(42:946)], dat_filt$final_age, 10, scale = F, center = T, cv = 20)
+
+# Plot Residuals
+plotXYResiduals(m1, show.labels = TRUE, labels = "indices")
+
 ## No more!
 
 # Date frame of outliers to double check in model
-outliers <- anti_join(dat_sg, dat_filt)
+outliers <- anti_join(dat_sg_filt, dat_filt)
 
 # PLS
 m2 = mdatools::pls(dat_filt[,c(42:946)], dat_filt$final_age, 10, x.test = outliers[,c(42:946)], y.test = outliers$final_age, scale = F, center = T, cv = 20)
@@ -211,7 +222,6 @@ dat_fin <- data.frame(rbind(dat_filt, outliers_2_add_back))
 # function for rsq
 rsq <- function (x, y) cor(x, y) ^ 2
 
-
 ### Optimize
 
 # VIP Scores
@@ -219,6 +229,27 @@ x_1 <- mdatools::pls(dat_fin[, c(42:946)], dat_fin$final_age,  x.test = dat_fin[
 
 comp <- x_1$cvres$ncomp.selected #allow each to use optimal ncomp
 vip <- vipscores(x_1, ncomp = comp)
+
+# SG spectra plot
+selected_wn <- vip[which(vip > .5),]
+names(selected_wn) <- sub('X','', names(selected_wn)) #remove X in front of wavenumbers
+selected_wn <- as.numeric(names(selected_wn))
+
+`%notin%` <- Negate(`%in%`)
+
+wn_dat_plot <- sg_dat_L[which(sg_dat_L$wavenumber %notin% selected_wn),]
+
+sp <- ggplot(sg_dat_L[seq(1,12696138, by=30),])+
+  geom_line(aes(x = wavenumber, y = absorbance, group = filename, color = as.factor(collection_year)))+
+  scale_x_reverse()+
+  theme_classic()+
+  # guides(color = "none")+
+  geom_vline(xintercept = wn_dat_plot$wavenumber, color = alpha("grey", 0.2))
+#facet_wrap(~collection_year, ncol = 4)
+
+pdf(file = "Output/spectra_with_selected_wavenumbers.pdf")
+sp
+dev.off()
 
 # Optimized model
 x <- mdatools::pls(dat_fin[, c(42:946)], dat_fin$final_age,  x.test = dat_fin[, c(42:946)], y.test = dat_fin$final_age, scale = F, center = T, ncomp = 10, cv = 20, exclcols = (vip < 0.5)) #when I have more time to run this, change to ncomp = 5 and cv = 1
