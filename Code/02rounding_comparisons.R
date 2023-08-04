@@ -15,16 +15,21 @@ df1_rounded <- df1 %>%
 
 ##################  
 # Nearest integer (status quo)
-bias1 <- ageBias(reference~nearest_int,data=df1_rounded,
-                nref.lab="Reference Age",ref.lab="Predicted Age")
+bias1 <- ageBias(nearest_int~reference,data=df1_rounded,
+                nref.lab="Predicted Age",ref.lab="Reference Age")
 
 plot(bias1)
+
+test <- bias1$data
+
+ggplot(test)+
+  geom_boxplot(aes(as.factor(reference), diff))
 
 pdf(file = "C:/Users/marri/OneDrive/Documents/AFSC A&G Contract/Rounding conversation SIDT/pollock-rounding/Output/bland_altman_nearest_integer.pdf", height = 5, width = 5.5)
 plot(bias1)
 dev.off()
 
-ap1 <- agePrecision(reference~nearest_int,data=df1_rounded)
+ap1 <- agePrecision(nearest_int~reference,data=df1_rounded)
 
 ## Make table df
 table_df1 <- data.frame(ASD = ap1$ASD, ACV = ap1$ACV, APE = ap1$APE, PercAgree = ap1$PercAgree)
@@ -53,8 +58,8 @@ dev.off()
 
 ##################
 # Round down - for survey samples, more closely aligned with traditional age reading  protocol
-bias2 <- ageBias(reference~round_down,data=df1_rounded,
-                 nref.lab="Reference Age",ref.lab="Predicted Age")
+bias2 <- ageBias(round_down~reference,data=df1_rounded,
+                 nref.lab="Predicted Age",ref.lab="Reference Age")
 
 plot(bias2)
 
@@ -62,7 +67,7 @@ pdf(file = "C:/Users/marri/OneDrive/Documents/AFSC A&G Contract/Rounding convers
 plot(bias2)
 dev.off()
 
-ap2 <- agePrecision(reference~round_down,data=df1_rounded)
+ap2 <- agePrecision(round_down~reference,data=df1_rounded)
 
 ## Make table df
 table_df2 <- data.frame(ASD = ap2$ASD, ACV = ap2$ACV, APE = ap2$APE, PercAgree = ap2$PercAgree)
@@ -91,8 +96,8 @@ dev.off()
 
 ##################
 # Round up - just to see
-bias3 <- ageBias(reference~round_up,data=df1_rounded,
-                 nref.lab="Reference Age",ref.lab="Predicted Age")
+bias3 <- ageBias(round_up~reference,data=df1_rounded,
+                 nref.lab="Predicted Age",ref.lab="Reference Age")
 
 plot(bias3)
 
@@ -100,7 +105,7 @@ pdf(file = "C:/Users/marri/OneDrive/Documents/AFSC A&G Contract/Rounding convers
 plot(bias3)
 dev.off()
 
-ap3 <- agePrecision(reference~round_up,data=df1_rounded)
+ap3 <- agePrecision(round_up~reference,data=df1_rounded)
 
 ## Make table df
 table_df3 <- data.frame(ASD = ap3$ASD, ACV = ap3$ACV, APE = ap3$APE, PercAgree = ap3$PercAgree)
