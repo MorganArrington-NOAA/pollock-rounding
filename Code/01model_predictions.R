@@ -10,7 +10,7 @@ library(plotly)
 library(FSA)
 
 # Load data
-load("Data/dat_sg.rda") #from Walleye Pollock, explore-pollock-spectra-offset script. SG preprocessing, PCA for outlier removal.
+load("C:/Users/marri/OneDrive/Documents/AFSC A&G Contract/Rounding conversation SIDT/pollock-rounding/Data/dat_sg.rda") #from Walleye Pollock, explore-pollock-spectra-offset script. SG preprocessing, PCA for outlier removal.
 
 # Filter all by spectra collected between 6/2021 and 5/2022
 ## Filter out all of 2022, and 2021 if month >= 6
@@ -307,3 +307,6 @@ ggplot()+
   labs(x = "Full X-distance, f/f0",
        y = "Y-distance, z/z0")+
   theme_classic()
+
+# Write prediction data frame to file
+write.csv(df1, file = "C:/Users/marri/OneDrive/Documents/AFSC A&G Contract/Rounding conversation SIDT/pollock-rounding/Data/model_predictions.csv")
