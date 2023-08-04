@@ -18,13 +18,11 @@ df1_rounded <- df1 %>%
 bias1 <- ageBias(reference~nearest_int,data=df1_rounded,
                 nref.lab="Reference Age",ref.lab="Predicted Age")
 
-p1 <- plot(bias1)
+plot(bias1)
 
-pdf(file = "C:/Users/marri/OneDrive/Documents/AFSC A&G Contract/Rounding conversation SIDT/pollock-rounding/Output/bland_altman_nearest_integer.pdf")
-p1
+pdf(file = "C:/Users/marri/OneDrive/Documents/AFSC A&G Contract/Rounding conversation SIDT/pollock-rounding/Output/bland_altman_nearest_integer.pdf", height = 5, width = 5.5)
+plot(bias1)
 dev.off()
-
-test <- as.raster(p1)
 
 ap1 <- agePrecision(reference~nearest_int,data=df1_rounded)
 
@@ -49,7 +47,7 @@ gflextable1 <- ggplot() +
   theme_void() + 
   annotation_custom(rasterGrob(ft_raster1), xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf)
 
-pdf(file = "C:/Users/marri/OneDrive/Documents/AFSC A&G Contract/Rounding conversation SIDT/pollock-rounding/Output/precision_metrics_nearest_integer.pdf")
+pdf(file = "C:/Users/marri/OneDrive/Documents/AFSC A&G Contract/Rounding conversation SIDT/pollock-rounding/Output/precision_metrics_nearest_integer.pdf", height = 1, width = 5.5)
 gflextable1
 dev.off()
 
@@ -58,10 +56,10 @@ dev.off()
 bias2 <- ageBias(reference~round_down,data=df1_rounded,
                  nref.lab="Reference Age",ref.lab="Predicted Age")
 
-p2 <- plot(bias2)
+plot(bias2)
 
-pdf(file = "C:/Users/marri/OneDrive/Documents/AFSC A&G Contract/Rounding conversation SIDT/pollock-rounding/Output/bland_altman_round_down.pdf")
-p2
+pdf(file = "C:/Users/marri/OneDrive/Documents/AFSC A&G Contract/Rounding conversation SIDT/pollock-rounding/Output/bland_altman_round_down.pdf", height = 5, width = 5.5)
+plot(bias2)
 dev.off()
 
 ap2 <- agePrecision(reference~round_down,data=df1_rounded)
@@ -87,7 +85,7 @@ gflextable2 <- ggplot() +
   theme_void() + 
   annotation_custom(rasterGrob(ft_raster2), xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf)
 
-pdf(file = "C:/Users/marri/OneDrive/Documents/AFSC A&G Contract/Rounding conversation SIDT/pollock-rounding/Output/precision_metrics_round_down.pdf")
+pdf(file = "C:/Users/marri/OneDrive/Documents/AFSC A&G Contract/Rounding conversation SIDT/pollock-rounding/Output/precision_metrics_round_down.pdf", height = 1, width = 5.5)
 gflextable2
 dev.off()
 
@@ -96,10 +94,10 @@ dev.off()
 bias3 <- ageBias(reference~round_up,data=df1_rounded,
                  nref.lab="Reference Age",ref.lab="Predicted Age")
 
-p3 <- plot(bias3)
+plot(bias3)
 
-pdf(file = "C:/Users/marri/OneDrive/Documents/AFSC A&G Contract/Rounding conversation SIDT/pollock-rounding/Output/bland_altman_round_up.pdf")
-p3
+pdf(file = "C:/Users/marri/OneDrive/Documents/AFSC A&G Contract/Rounding conversation SIDT/pollock-rounding/Output/bland_altman_round_up.pdf", height = 5, width = 5.5)
+plot(bias3)
 dev.off()
 
 ap3 <- agePrecision(reference~round_up,data=df1_rounded)
@@ -125,6 +123,6 @@ gflextable3 <- ggplot() +
   theme_void() + 
   annotation_custom(rasterGrob(ft_raster3), xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf)
 
-pdf(file = "C:/Users/marri/OneDrive/Documents/AFSC A&G Contract/Rounding conversation SIDT/pollock-rounding/Output/precision_metrics_round_up.pdf")
+pdf(file = "C:/Users/marri/OneDrive/Documents/AFSC A&G Contract/Rounding conversation SIDT/pollock-rounding/Output/precision_metrics_round_up.pdf", height = 1, width = 5.5)
 gflextable3
 dev.off()
